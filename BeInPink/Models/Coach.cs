@@ -5,8 +5,13 @@ using System.Web;
 
 namespace BeInPink.Models
 {
-    public class Coach : User
+    public class Coach: ApplicationUser
     {
-        public String qualification { get; set; }
+        public string CoachingType { get; set; }
+        public string Description { get; set; }
+        public string WorkLocation { get; set; }
+       
+        public string Qualification { get; set; }
+        public string Specialization { get; set; }
     }
 }

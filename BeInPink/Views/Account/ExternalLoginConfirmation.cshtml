@@ -1,5 +1,7 @@
 ﻿@model BeInPink.Models.ExternalLoginConfirmationViewModel
 @{
+    /**/
+
     ViewBag.Title = "Register";
 }
 <h2>@ViewBag.Title.</h2>
@@ -29,6 +31,34 @@
         <div class="col-md-10">
             @Html.TextBoxFor(m => m.CoachingType, new { @class = "form-control" })
             @Html.ValidationMessageFor(m => m.CoachingType)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Description, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Description)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.WorkLocation, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.WorkLocation, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.WorkLocation)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Qualification, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Qualification, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Qualification)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Specialization, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Specialization, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Specialization)
         </div>
     </div>
     <div class="form-group">

@@ -9,6 +9,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BeInPink.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity;
+using System.Collections.Generic;
 
 namespace BeInPink.Controllers
 {
@@ -17,15 +20,22 @@ namespace BeInPink.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        //private DbContext context;
+        //private List<IdentityRole> roles;
 
         public AccountController()
         {
+            //var roleStore = new RoleStore<IdentityRole>(context);
+            //var roleMngr = new RoleManager<IdentityRole>(roleStore);
+
+            //roles = roleMngr.Roles.ToList();
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
+
         }
 
         public ApplicationSignInManager SignInManager
@@ -34,9 +44,9 @@ namespace BeInPink.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -120,7 +130,7 @@ namespace BeInPink.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -155,8 +165,8 @@ namespace BeInPink.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -172,6 +182,52 @@ namespace BeInPink.Controllers
             return View(model);
         }
 
+        //
+        // GET: /Account/RegisterCoach
+        [AllowAnonymous]
+        public ActionResult RegisterCoach()
+        {
+            return View();
+        }
+
+        //
+        // POST: /Account/RegisterCoach
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RegisterCoach(RegisterCoachViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new Coach
+                {
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    Qualification = model.Qualification,
+                    Description = model.Description,
+                    CoachingType = model.CoachingType,
+                    Specialization = model.Specialization,
+                    WorkLocation = model.WorkLocation
+                };
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
+                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
+                    // Send an email with this link
+                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                    return RedirectToAction("Index", "Home");
+                }
+                AddErrors(result);
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
         //
         // GET: /Account/ConfirmEmail
         [AllowAnonymous]
@@ -367,10 +423,16 @@ namespace BeInPink.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser
+                var user = new Coach
                 {
-                    UserName = model.Email, Email = model.Email,
-                    CoachingType = model.CoachingType
+                    UserName = model.Email,
+                    Email = model.Email,
+                    CoachingType = model.CoachingType,
+                    Description = model.Description,
+                    WorkLocation = model.WorkLocation,
+                    Qualification = model.Qualification,
+                    Specialization = model.Specialization
+                    // UserQualifications = model.Qualifications
                 };
                 var result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)

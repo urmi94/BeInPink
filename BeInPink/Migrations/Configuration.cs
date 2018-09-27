@@ -5,14 +5,15 @@ namespace BeInPink.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<BeInPink.Models.ClientDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<BeInPink.Models.ApplicationDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+            ContextKey = "BeInPink.Models.ApplicationDbContext";
         }
 
-        protected override void Seed(BeInPink.Models.ClientDbContext context)
+        protected override void Seed(BeInPink.Models.ApplicationDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
