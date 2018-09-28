@@ -27,47 +27,49 @@
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.CoachingType, new { @class = "col-md-2 control-label" })
+        @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.CoachingType, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.CoachingType)
+            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.UserName)
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Description, new { @class = "col-md-2 control-label" })
+        @Html.LabelFor(m => m.FirstName, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Description)
+            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.FirstName)
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.WorkLocation, new { @class = "col-md-2 control-label" })
+        @Html.LabelFor(m => m.LastName, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.WorkLocation, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.WorkLocation)
+            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.LastName)
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Qualification, new { @class = "col-md-2 control-label" })
+        @Html.LabelFor(m => m.DOB, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Qualification, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Qualification)
+            @Html.TextBoxFor(m => m.DOB, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.DOB)
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.Specialization, new { @class = "col-md-2 control-label" })
+        @Html.LabelFor(m => m.WhoAreYou, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Specialization, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Specialization)
+            @Html.EnumDropDownListFor(model => model.WhoAreYou, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.WhoAreYou)
         </div>
     </div>
+
+
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Register" />
+            <input type="submit" class="btn btn-default" value="Register"  />
         </div>
     </div>
-}
+    }
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

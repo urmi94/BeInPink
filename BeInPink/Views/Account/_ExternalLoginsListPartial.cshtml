@@ -1,6 +1,7 @@
 ﻿@model BeInPink.Models.ExternalLoginListViewModel
 @using Microsoft.Owin.Security
 
+<link href="~/Content/Site.css" rel="stylesheet" />
 <h4>Use another service to log in.</h4>
 <hr />
 @{
@@ -18,11 +19,25 @@
             @Html.AntiForgeryToken()
             <div id="socialLoginList">
                 <p>
-                    @foreach (AuthenticationDescription p in loginProviders) {
-                        <button type="submit" class="btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+                    @foreach (AuthenticationDescription p in loginProviders)
+                    {
+                        if (p.Caption == "Google")
+                        {
+                            <button type="submit" class="loginBtn loginBtn--google btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+                        }   
+                        else if (p.Caption == "Facebook")
+                        {
+                            <button type="submit" class="loginBtn loginBtn--facebook btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+                        }
                     }
                 </p>
             </div>
         }
     }
 }
+
+            

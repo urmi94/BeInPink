@@ -201,6 +201,9 @@ namespace BeInPink.Controllers
             {
                 var user = new Coach
                 {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    DOB=model.DOB,
                     UserName = model.UserName,
                     Email = model.Email,
                     Qualification = model.Qualification,
@@ -208,6 +211,58 @@ namespace BeInPink.Controllers
                     CoachingType = model.CoachingType,
                     Specialization = model.Specialization,
                     WorkLocation = model.WorkLocation
+                };
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
+                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
+                    // Send an email with this link
+                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                    return RedirectToAction("Index", "Home");
+                }
+                AddErrors(result);
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        //
+        // GET: /Account/RegisterClient
+        [AllowAnonymous]
+        public ActionResult RegisterClient()
+        {
+            return View();
+        }
+
+        //
+        // POST: /Account/RegisterClient
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RegisterClient(RegisterClientViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new Client
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    DOB = model.DOB.Date,
+                    Sex = model.Sex,
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    Height = model.Height,
+                    Weight = model.Weight,
+                    TargetWeight = model.TargetWeight,
+                    LifeStyle = model.LifeStyle,
+                    FitnessPlan = model.FitnessPlan
+
                 };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -423,31 +478,62 @@ namespace BeInPink.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new Coach
+                if (model.WhoAreYou == ExternalLoginConfirmationViewModel._UserType.Client)
                 {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    CoachingType = model.CoachingType,
-                    Description = model.Description,
-                    WorkLocation = model.WorkLocation,
-                    Qualification = model.Qualification,
-                    Specialization = model.Specialization
-                    // UserQualifications = model.Qualifications
-                };
-                var result = await UserManager.CreateAsync(user);
-                if (result.Succeeded)
-                {
-                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                    var user = new Client
+                    {
+                        UserName = model.Email,
+                        Email = model.Email,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        DOB = model.DOB
+                    };
+                    var result = await UserManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        return RedirectToLocal(returnUrl);
+                        result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                        if (result.Succeeded)
+                        {
+                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                            return RedirectToLocal(returnUrl);
+                        }
                     }
+                    AddErrors(result);
                 }
-                AddErrors(result);
+                else
+                {
+                        var user = new Coach
+                        {
+                            UserName = model.Email,
+                            Email = model.Email,
+                            FirstName = model.FirstName,
+                            LastName = model.LastName,
+                            DOB = model.DOB
+                        };
+                    var result = await UserManager.CreateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                        if (result.Succeeded)
+                        {
+                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                            return RedirectToLocal(returnUrl);
+                        }
+                    }
+                    AddErrors(result);
+                }
+                
             }
 
             ViewBag.ReturnUrl = returnUrl;
+            if(model.WhoAreYou==ExternalLoginConfirmationViewModel._UserType.Client)
+            {
+                //return Edit Client Profile Page
+            }
+            else
+            {
+                //return Edit Coach Profile Page
+            }
             return View(model);
         }
 

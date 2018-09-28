@@ -12,14 +12,28 @@ namespace BeInPink.Models
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
-
-        public string CoachingType { get; set; }
-        public string Description { get; set; }
-        public string WorkLocation { get; set; }
-        // public virtual List<UserQualifications> Qualifications { get; set; }
-
-        public string Qualification { get; set; }
-        public string Specialization { get; set; }
+        [Required]
+        // [Index(IsUnique = true)]
+        [Display(Name = "Username")]
+        public string UserName { get; set; }
+        [Required]
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+        [Required]
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+        [Required]
+        [Display(Name = "Date of Birth")]
+        public DateTime DOB { get; set; }
+        public enum _UserType
+        {
+            [Display(Name ="Someone who wants to give fitness services")]
+            Coach =1,
+            [Display(Name = "Someone who is seeking fitness services")]
+            Client =2
+        }
+        [Display(Name ="Who are you?")]
+        public _UserType WhoAreYou { get; set; }
     }
 
     public class ExternalLoginListViewModel
@@ -124,8 +138,14 @@ namespace BeInPink.Models
     }
     public class RegisterCoachViewModel
     {
+        [Required]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
+        [Required]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
+        [Required]
+        [Display(Name = "Date of Birth")]
         public DateTime DOB { get; set; }
 
         [Key]
@@ -135,11 +155,11 @@ namespace BeInPink.Models
         public string Email { get; set; }
 
         [Required]
-       // [Index(IsUnique = true)]
+        // [Index(IsUnique = true)]
         [Display(Name = "Username")]
         public string UserName { get; set; }
 
-        [Required]
+        [Required]  
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
@@ -151,27 +171,39 @@ namespace BeInPink.Models
         public string ConfirmPassword { get; set; }
 
         [Display(Name = "Qualification")]
+        [StringLength(256, ErrorMessage = "The {0} must not be larger than {1} charaters.")]
         public string Qualification { get; set; }
 
         [Display(Name = "Your brief description")]
-        [StringLength(1000, ErrorMessage = "Description cannot be longer than 1000 characters.")]
+        [StringLength(1000, ErrorMessage = "The {0} must not be larger than {1} charaters.")]
         public string Description { get; set; }
 
-        [Required]
+        [StringLength(250, ErrorMessage = "The {0} must not be larger than {1} charaters.")]
         [Display(Name = "What coaching would you provide?")]
         public string CoachingType { get; set; }
 
         [Display(Name = "Coaching Specialization")]
+        [StringLength(50, ErrorMessage = "The {0} must not be larger than {1} charaters.")]
         public string Specialization { get; set; }
 
         [Display(Name = "Where are you located?")]
+        [StringLength(25, ErrorMessage = "The {0} must not be larger than {1} charaters.")]
         public string WorkLocation { get; set; }
     }
     public class RegisterClientViewModel
     {
+        [Required]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
+        [Required]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
+        [Required]
+        [Display(Name = "Date Of Birth")]
+        [DateLessThanToday(ErrorMessage ="Do you come from future?")]
         public DateTime DOB { get; set; }
+        [Required]
+        public _Gender Sex { get; set; }
 
         [Key]
         [Required]
@@ -192,18 +224,20 @@ namespace BeInPink.Models
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        public string   ConfirmPassword { get; set; }
 
         [Range(20, 280, ErrorMessage = "This height is not human")]
         [Display(Name = "Height in CMs")]
-        public double Height { get; set; }
+        public double? Height { get; set; }
         [Range(2, 650, ErrorMessage = "This weight is not human")]
         [Display(Name = "Weight in KGs")]
-        public double Weight { get; set; }
+        public double? Weight { get; set; }
         [Range(2, 650, ErrorMessage = "This weight is not human")]
         [Display(Name = "What is your target weight in KGs")]
-        public double TargetWeight { get; set; }
-        public _ActivityFactor LifeStyle { get; set; }
-        public _FitnessPlan FitnessPlan { get; set; }
+        public double? TargetWeight { get; set; }
+        [Display(Name ="How is your lifestyle?")]
+        public _ActivityFactor? LifeStyle { get; set; }
+        [Display(Name = "What are you here for?")]
+        public _FitnessPlan? FitnessPlan { get; set; }
     }
 }
