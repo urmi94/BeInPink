@@ -14,19 +14,25 @@ namespace BeInPink.Models
         public DateTime? TargetDate { get; set; }
         public double? Waist { get; set; }
         public double? Hip { get; set; }
+        public double? _WaistToHipRatio;
         public double? WaistToHipRatio
         {
+
             get
             {
-                return Waist / Hip;
+                return (Waist != null && Hip != null) ? Math.Round((Waist / Hip).Value, 2) : (double?)null;
             }
+            set
+            { }
         }
         public double? BMI
         {
             get
             {
-                return (Weight / Height / Height) * 10000;
+                return (Weight != null && Height != null) ? Math.Round(((Weight / Height / Height) * 10000).Value, 2) : (double?)null;
             }
+            set
+            { }
         }
         public string BmiResult
         {
@@ -43,16 +49,20 @@ namespace BeInPink.Models
                 else
                     return "";
             }
+            set
+            { }
         }
         public double? BMR
         {
             get
             {
                 if (Sex == _Gender.Female)
-                    return (655 + (4.35 * Weight * 2.20462) + (4.7 * Height * 0.393701) - (4.7 * Age));
+                    return (Weight != null && Height != null && Age!=null) ? Math.Round((655 + (4.35 * Weight * 2.20462) + (4.7 * Height * 0.393701) - (4.7 * Age)).Value, 2):(double?)null;
                 else
-                    return (66 + (6.23 * Weight * 2.20462) + (12.7 * Height * 0.393701) - (6.8 * Age));
+                    return (Weight != null && Height != null && Age != null) ? Math.Round((66 + (6.23 * Weight * 2.20462) + (12.7 * Height * 0.393701) - (6.8 * Age)).Value, 2):(double?)null;
             }
+            set
+            { }
         }
         public enum _Gender
         {
@@ -61,24 +71,26 @@ namespace BeInPink.Models
             Others = 3
         }
         public _Gender Sex { get; set; }
-        public double Age
+        public int? Age
         {
             get
             {
                 return DateTime.Today.Year - DOB.Year;
             }
+            set
+            { }
         }
         public enum _ActivityFactor
         {
-            Sedentary=1,
+            Sedentary = 1,
             [Display(Name = "Lightly Active")]
-            LightlyActive=2,
+            LightlyActive = 2,
             [Display(Name = "Moderately Active")]
-            ModeratelyActive=3,
+            ModeratelyActive = 3,
             [Display(Name = "Very Active")]
-            VeryActive=4,
+            VeryActive = 4,
             [Display(Name = "Extremely Active")]
-            ExtremelyActive=5
+            ExtremelyActive = 5
         }
         public _ActivityFactor? LifeStyle { get; set; }
 
@@ -98,20 +110,24 @@ namespace BeInPink.Models
             get
             {
                 if (Sex == _Gender.Female)
-                    return (-2.097 + (0.1069 * Height) + (0.2466 * Weight));
+                    return (Weight != null && Height != null) ? Math.Round((-2.097 + (0.1069 * Height) + (0.2466 * Weight)).Value, 2):(double?)null;
                 else
-                    return (2.447 - (0.09156 * Age) + (0.1074 * Height) + (0.3362 * Weight));
+                    return (Weight != null && Height != null) ? Math.Round((2.447 - (0.09156 * Age) + (0.1074 * Height) + (0.3362 * Weight)).Value, 2) : (double?)null;
             }
+            set
+            { }
         }
         public double? BodyFatPercentage
         {
             get
             {
                 if (Sex == _Gender.Female)
-                    return ((Weight - (((((Weight * 0.732) + 9.987 + (5 / 3.14)) - (Waist * 0.157)) - (Hip * 0.249)) + (8 * 0.434))) / Weight) * 100;
+                    return (Weight != null && Height != null && Waist!=null && Hip!=null) ? Math.Round((((Weight - (((((Weight * 0.732) + 9.987 + (5 / 3.14)) - (Waist * 0.157)) - (Hip * 0.249)) + (8 * 0.434))) / Weight) * 100).Value, 2) : (double?)null;
                 else
-                    return ((Weight - (((Weight * 1.082) + 94.42) - (Waist * 4.15))) / Weight) * 100;
+                    return (Weight != null && Height != null && Waist != null && Hip != null) ? Math.Round((((Weight - (((Weight * 1.082) + 94.42) - (Waist * 4.15))) / Weight) * 100).Value, 2) : (double?)null;
             }
+            set
+            { }
         }
         public double? Heamoglobin { get; set; }
         public int? SystoleBP { get; set; }
@@ -122,23 +138,25 @@ namespace BeInPink.Models
         public double? FastingSugar { get; set; }
         public double? PostPrandialSugar { get; set; }
         public string MedicalCondition { get; set; }
-        public double? DailyCalorieIntake
+        public int? DailyCalorieIntake
         {
             get
             {
                 if (LifeStyle.ToString() == "Sedentary")
-                    return BMR * 1.2;
+                    return (BMR!=null)?Convert.ToInt32(BMR * 1.2) : (int?)null;
                 if (LifeStyle.ToString() == "LightlyActive")
-                    return BMR * 1.375;
+                    return (BMR != null) ? Convert.ToInt32(BMR * 1.375) : (int?)null;
                 if (LifeStyle.ToString() == "ModeratelyActive")
-                    return BMR * 1.55;
+                    return (BMR != null) ? Convert.ToInt32(BMR * 1.55) : (int?)null;
                 if (LifeStyle.ToString() == "VeryActive")
-                    return BMR * 1.725;
+                    return (BMR != null) ? Convert.ToInt32(BMR * 1.725) : (int?)null;
                 if (LifeStyle.ToString() == "ExtremelyActive")
-                    return BMR * 1.9;
+                    return (BMR != null) ? Convert.ToInt32(BMR * 1.9) : (int?)null;
                 else
                     return null;
             }
+            set
+            { }
         }
         public double? DailyCarbIntake { get; set; }
         public double? DailyProteinIntake { get; set; }

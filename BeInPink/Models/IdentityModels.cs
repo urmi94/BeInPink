@@ -45,6 +45,8 @@ namespace BeInPink.Models
         public System.Data.Entity.DbSet<BeInPink.Models.RegisterClientViewModel> Clients { get; set; }
 
         public System.Data.Entity.DbSet<BeInPink.Models.RegisterCoachViewModel> Coaches { get; set; }
+
+        public System.Data.Entity.DbSet<BeInPink.Models.EditClientProfileViewModel> EditClientProfileViewModels { get; set; }
         //public System.Data.Entity.DbSet<ApplicationUser> ApplicationUsers { get; set; }
     }
 

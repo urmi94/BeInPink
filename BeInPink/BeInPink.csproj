@@ -233,6 +233,30 @@
     <Compile Include="Migrations\201809281619511_Update.Designer.cs">
       <DependentUpon>201809281619511_Update.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809290743597_UpdateMig29Sept.cs" />
+    <Compile Include="Migrations\201809290743597_UpdateMig29Sept.Designer.cs">
+      <DependentUpon>201809290743597_UpdateMig29Sept.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809291049311_EditClientProfile.cs" />
+    <Compile Include="Migrations\201809291049311_EditClientProfile.Designer.cs">
+      <DependentUpon>201809291049311_EditClientProfile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809291742032_UpdateEditClientProfile.cs" />
+    <Compile Include="Migrations\201809291742032_UpdateEditClientProfile.Designer.cs">
+      <DependentUpon>201809291742032_UpdateEditClientProfile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809291845527_UpdateEditClientProfile2.cs" />
+    <Compile Include="Migrations\201809291845527_UpdateEditClientProfile2.Designer.cs">
+      <DependentUpon>201809291845527_UpdateEditClientProfile2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809291916565_UpdateEditClientProfile3.cs" />
+    <Compile Include="Migrations\201809291916565_UpdateEditClientProfile3.Designer.cs">
+      <DependentUpon>201809291916565_UpdateEditClientProfile3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809292007174_UpdateEditClientProfile4.cs" />
+    <Compile Include="Migrations\201809292007174_UpdateEditClientProfile4.Designer.cs">
+      <DependentUpon>201809292007174_UpdateEditClientProfile4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Client.cs" />
@@ -444,6 +468,8 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Account\RegisterCoach.cshtml" />
     <Content Include="Views\Account\RegisterClient.cshtml" />
+    <Content Include="Views\Account\EditClientProfile2.cshtml" />
+    <Content Include="Views\Account\EditClientProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
@@ -477,6 +503,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809281619511_Update.resx">
       <DependentUpon>201809281619511_Update.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809290743597_UpdateMig29Sept.resx">
+      <DependentUpon>201809290743597_UpdateMig29Sept.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809291049311_EditClientProfile.resx">
+      <DependentUpon>201809291049311_EditClientProfile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809291742032_UpdateEditClientProfile.resx">
+      <DependentUpon>201809291742032_UpdateEditClientProfile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809291845527_UpdateEditClientProfile2.resx">
+      <DependentUpon>201809291845527_UpdateEditClientProfile2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809291916565_UpdateEditClientProfile3.resx">
+      <DependentUpon>201809291916565_UpdateEditClientProfile3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809292007174_UpdateEditClientProfile4.resx">
+      <DependentUpon>201809292007174_UpdateEditClientProfile4.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

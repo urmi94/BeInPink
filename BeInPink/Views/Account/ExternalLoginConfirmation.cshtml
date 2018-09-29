@@ -48,10 +48,11 @@
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(m => m.DOB, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.DOB, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.DOB)
+        @Html.LabelFor(m => m.DOB, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10 input-group date" data-provide="datepicker">
+            <span class="glyphicon glyphicon-th"></span>
+            @Html.EditorFor(m => m.DOB, new { htmlAttributes = new { @class = "form-control input-group-addon" } })
+            @Html.ValidationMessageFor(m => m.DOB, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
@@ -61,15 +62,17 @@
             @Html.ValidationMessageFor(m => m.WhoAreYou)
         </div>
     </div>
-
+    
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Register"  />
+            <input type="submit" class="btn btn-default" value="Register" />
         </div>
     </div>
-    }
+}
 
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }
+@section Scripts {
+    <link href="~/Contents/bootstrap-datepicker.min.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+}

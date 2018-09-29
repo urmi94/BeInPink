@@ -12,6 +12,7 @@ using BeInPink.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
 
 namespace BeInPink.Controllers
 {
@@ -20,7 +21,7 @@ namespace BeInPink.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        //private DbContext context;
+        private ApplicationDbContext db = new ApplicationDbContext();
         //private List<IdentityRole> roles;
 
         public AccountController()
@@ -199,11 +200,12 @@ namespace BeInPink.Controllers
         {
             if (ModelState.IsValid)
             {
+                CultureInfo cultureinfo = new CultureInfo("nl-NL");
                 var user = new Coach
                 {
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    DOB=model.DOB,
+                    DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo),
                     UserName = model.UserName,
                     Email = model.Email,
                     Qualification = model.Qualification,
@@ -249,11 +251,12 @@ namespace BeInPink.Controllers
         {
             if (ModelState.IsValid)
             {
+                CultureInfo cultureinfo = new CultureInfo("nl-NL");
                 var user = new Client
                 {
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    DOB = model.DOB.Date,
+                    DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo),
                     Sex = model.Sex,
                     UserName = model.UserName,
                     Email = model.Email,
@@ -472,6 +475,7 @@ namespace BeInPink.Controllers
 
             if (ModelState.IsValid)
             {
+                CultureInfo cultureinfo = new CultureInfo("nl-NL");
                 // Get the information about the user from the external login provider
                 var info = await AuthenticationManager.GetExternalLoginInfoAsync();
                 if (info == null)
@@ -482,11 +486,49 @@ namespace BeInPink.Controllers
                 {
                     var user = new Client
                     {
+                        UserName = model.UserName,
+                        Email = model.Email,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo)
+                    };
+                    var result = await UserManager.CreateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                        if (result.Succeeded)
+                        {
+                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                            // return RedirectToLocal(returnUrl);
+                            //return View("EditClientProfile", new EditClientProfileViewModel
+                            //{
+                            //    UserName = model.Email,
+                            //    Email = model.Email,
+                            //    FirstName = model.FirstName,
+                            //    LastName = model.LastName,
+                            //    DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo)
+                            //});
+                            return RedirectToAction("GetEditClientProfile", "Account", new EditClientProfileViewModel
+                            {
+                                UserName = model.UserName,
+                                Email = model.Email,
+                                FirstName = model.FirstName,
+                                LastName = model.LastName,
+                                DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo)
+                            }); 
+                        }
+                    }
+                    AddErrors(result);
+                }
+                else
+                {
+                    var user = new Coach
+                    {
                         UserName = model.Email,
                         Email = model.Email,
                         FirstName = model.FirstName,
                         LastName = model.LastName,
-                        DOB = model.DOB
+                        DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo)
                     };
                     var result = await UserManager.CreateAsync(user);
                     if (result.Succeeded)
@@ -496,37 +538,16 @@ namespace BeInPink.Controllers
                         {
                             await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                             return RedirectToLocal(returnUrl);
+                            //return View("RegisterCoach", model);
                         }
                     }
                     AddErrors(result);
                 }
-                else
-                {
-                        var user = new Coach
-                        {
-                            UserName = model.Email,
-                            Email = model.Email,
-                            FirstName = model.FirstName,
-                            LastName = model.LastName,
-                            DOB = model.DOB
-                        };
-                    var result = await UserManager.CreateAsync(user);
-                    if (result.Succeeded)
-                    {
-                        result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                        if (result.Succeeded)
-                        {
-                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                            return RedirectToLocal(returnUrl);
-                        }
-                    }
-                    AddErrors(result);
-                }
-                
+
             }
 
             ViewBag.ReturnUrl = returnUrl;
-            if(model.WhoAreYou==ExternalLoginConfirmationViewModel._UserType.Client)
+            if (model.WhoAreYou == ExternalLoginConfirmationViewModel._UserType.Client)
             {
                 //return Edit Client Profile Page
             }
@@ -573,6 +594,76 @@ namespace BeInPink.Controllers
             }
 
             base.Dispose(disposing);
+        }
+
+        //
+        // GET: /Account/EditClientProfile
+        [AllowAnonymous]
+        public ActionResult GetEditClientProfile(EditClientProfileViewModel model)
+        {
+            return View("EditClientProfile", model);
+        }
+
+        //
+        // POST: /Account/EditClientProfile
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditClientProfile(EditClientProfileViewModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    CultureInfo cultureinfo = new CultureInfo("nl-NL");
+                    //var store = new UserStore<Client>(new ApplicationDbContext());
+                    //var userManager = new UserManager<Client>(store);
+                    //Client user = userManager.FindByNameAsync(User.Identity.Name).Result;
+
+                    Client user = new Client();
+                    user.Id = User.Identity.GetUserId();
+                    user.Email = model.Email;
+                    user.UserName = model.UserName;
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo);
+                    user.Sex = model.Sex;                                    
+                    user.Height = model.Height;
+                    user.Weight = model.Weight;
+                    user.TargetWeight = model.TargetWeight;
+                    user.TargetDate = model.TargetDate;
+                    user.LifeStyle = model.LifeStyle;
+                    user.FitnessPlan = model.FitnessPlan;
+                    user.Waist = model.Waist;
+                    user.Hip = model.Hip;
+                 //   user.WaistToHipRatio = model.WaistToHipRatio;
+
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index", "Home");
+
+                }
+                else
+                {
+                    return View(model);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                //foreach (var eve in e.EntityValidationErrors)
+                //{
+                //    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                //        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                //    foreach (var ve in eve.ValidationErrors)
+                //    {
+                //        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                //            ve.PropertyName, ve.ErrorMessage);
+                //    }
+                //}
+                return View(model);
+            }
+
         }
 
         #region Helpers
