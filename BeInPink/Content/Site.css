@@ -94,3 +94,8 @@ textarea {
     .loginBtn--google:focus {
         background: #E74B37;
     }
+
+.responsive{
+    width:100%;
+    height:auto;
+}

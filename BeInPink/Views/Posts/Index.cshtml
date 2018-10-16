@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<BeInPink.Models.Post>
-
+@using Microsoft.AspNet.Identity;
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -24,9 +24,7 @@
         <th>
             @Html.DisplayNameFor(model => model.PostContent)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PostType)
-        </th>
+
         <th>
             @Html.DisplayNameFor(model => model.PostDate)
         </th>
@@ -36,35 +34,39 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Author.FirstName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Updater.FirstName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PostHeading)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PostContent)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PostType)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PostDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PostUpdatedOn)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.PostId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.PostId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.PostId })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Author.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Updater.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostHeading)
+            </td>
+            <td>
+                @Html.Raw(item.PostContent)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PostUpdatedOn)
+            </td>
+            <td>
+                @if (item.AuthorId == User.Identity.GetUserId() || User.IsInRole("Admin"))
+                {
+                    @Html.ActionLink("Edit", "Edit", new { id = item.PostId })
+                    <text>|</text>
+                    @Html.ActionLink("Delete", "Delete", new { id = item.PostId })
+                }
+
+                @Html.ActionLink("Details", "Details", new { id = item.PostId }) |
+
+            </td>
+        </tr>
+    }
 
 </table>

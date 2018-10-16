@@ -102,6 +102,8 @@ namespace BeInPink.Controllers
         {
             if (ModelState.IsValid)
             {
+                post.PostUpdatedOn = DateTime.Now;
+                post.UpdatedById = User.Identity.GetUserId();
                 db.Entry(post).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

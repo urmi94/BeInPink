@@ -534,6 +534,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Images\health-wellness.jpg" />
     <Content Include="Images\icon_facebook.png" />
     <Content Include="Images\icon_google.png" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
