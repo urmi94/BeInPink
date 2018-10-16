@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
 using System.Collections.Generic;
 using System.Data.Entity.Validation;
+using BeInPink.Utils;
 
 namespace BeInPink.Controllers
 {
@@ -22,14 +23,9 @@ namespace BeInPink.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
         private ApplicationDbContext db = new ApplicationDbContext();
-        //private List<IdentityRole> roles;
-
+       
         public AccountController()
         {
-            //var roleStore = new RoleStore<IdentityRole>(context);
-            //var roleMngr = new RoleManager<IdentityRole>(roleStore);
-
-            //roles = roleMngr.Roles.ToList();
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -86,20 +82,32 @@ namespace BeInPink.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
-            switch (result)
+            //var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            try
             {
-                case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    return View("Lockout");
-                case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
-                default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
+                var user = db.Users.Where(u => u.Email.Equals(model.Email)).Single(); // where db is ApplicationDbContext instance
+                var result = await SignInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, shouldLockout: false);
+                switch (result)
+                {
+                    case SignInStatus.Success:
+                        return RedirectToLocal(returnUrl);
+                    case SignInStatus.LockedOut:
+                        return View("Lockout");
+                    case SignInStatus.RequiresVerification:
+                        return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    case SignInStatus.Failure:
+                    default:
+                        ModelState.AddModelError("", "Invalid login attempt.");
+                        return View(model);
+                }
             }
+            catch (InvalidOperationException)
+            {
+                // the user is not exist
+                return View(model);
+            }
+
+
         }
 
         //
@@ -218,14 +226,22 @@ namespace BeInPink.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    UserManager.AddToRole(user.Id, "Coach");
 
-                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action(
+                       "ConfirmEmail", "Account",
+                       new { userId = user.Id, code = code },
+                       protocol: Request.Url.Scheme);
+                    EmailSender es = new EmailSender();
+                    es.Send(user.Email,
+                       "Confirm your account",
+                       "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
 
-                    return RedirectToAction("Index", "Home");
+
+                    ModelState.Clear();
+
+                    return View("ConfirmEmail");
                 }
                 AddErrors(result);
             }
@@ -272,13 +288,22 @@ namespace BeInPink.Controllers
                 {
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
-                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    UserManager.AddToRole(user.Id, "Client");
 
-                    return RedirectToAction("Index", "Home");
+                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action(
+                       "ConfirmEmail", "Account",
+                       new { userId = user.Id, code = code },
+                       protocol: Request.Url.Scheme);
+                    EmailSender es = new EmailSender();
+                    es.Send(user.Email,
+                       "Confirm your account",
+                       "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
+
+
+                    ModelState.Clear();
+
+                    return View("ConfirmEmail");
                 }
                 AddErrors(result);
             }
@@ -484,13 +509,15 @@ namespace BeInPink.Controllers
                 }
                 if (model.WhoAreYou == ExternalLoginConfirmationViewModel._UserType.Client)
                 {
+
                     var user = new Client
                     {
                         UserName = model.UserName,
                         Email = model.Email,
                         FirstName = model.FirstName,
                         LastName = model.LastName,
-                        DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo)
+                        DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo),
+                        EmailConfirmed = true
                     };
                     var result = await UserManager.CreateAsync(user);
                     if (result.Succeeded)
@@ -499,15 +526,8 @@ namespace BeInPink.Controllers
                         if (result.Succeeded)
                         {
                             await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                            // return RedirectToLocal(returnUrl);
-                            //return View("EditClientProfile", new EditClientProfileViewModel
-                            //{
-                            //    UserName = model.Email,
-                            //    Email = model.Email,
-                            //    FirstName = model.FirstName,
-                            //    LastName = model.LastName,
-                            //    DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo)
-                            //});
+
+                            UserManager.AddToRole(user.Id, "Client");
                             return RedirectToAction("GetEditClientProfile", "Account", new EditClientProfileViewModel
                             {
                                 UserName = model.UserName,
@@ -515,7 +535,7 @@ namespace BeInPink.Controllers
                                 FirstName = model.FirstName,
                                 LastName = model.LastName,
                                 DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo)
-                            }); 
+                            });
                         }
                     }
                     AddErrors(result);
@@ -528,7 +548,8 @@ namespace BeInPink.Controllers
                         Email = model.Email,
                         FirstName = model.FirstName,
                         LastName = model.LastName,
-                        DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo)
+                        DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo),
+                        EmailConfirmed = true
                     };
                     var result = await UserManager.CreateAsync(user);
                     if (result.Succeeded)
@@ -537,8 +558,16 @@ namespace BeInPink.Controllers
                         if (result.Succeeded)
                         {
                             await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                            return RedirectToLocal(returnUrl);
-                            //return View("RegisterCoach", model);
+                            UserManager.AddToRole(user.Id, "Coach");
+                            return RedirectToAction("GetEditCoachProfile", "Account", new EditCoachProfileViewModel
+                            {
+                                UserName = model.UserName,
+                                Email = model.Email,
+                                FirstName = model.FirstName,
+                                LastName = model.LastName,
+                                DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo)
+
+                            });
                         }
                     }
                     AddErrors(result);
@@ -547,14 +576,6 @@ namespace BeInPink.Controllers
             }
 
             ViewBag.ReturnUrl = returnUrl;
-            if (model.WhoAreYou == ExternalLoginConfirmationViewModel._UserType.Client)
-            {
-                //return Edit Client Profile Page
-            }
-            else
-            {
-                //return Edit Coach Profile Page
-            }
             return View(model);
         }
 
@@ -616,10 +637,7 @@ namespace BeInPink.Controllers
                 if (ModelState.IsValid)
                 {
                     CultureInfo cultureinfo = new CultureInfo("nl-NL");
-                    //var store = new UserStore<Client>(new ApplicationDbContext());
-                    //var userManager = new UserManager<Client>(store);
-                    //Client user = userManager.FindByNameAsync(User.Identity.Name).Result;
-
+                    Guid securityStamp = Guid.NewGuid();
                     Client user = new Client();
                     user.Id = User.Identity.GetUserId();
                     user.Email = model.Email;
@@ -627,7 +645,7 @@ namespace BeInPink.Controllers
                     user.FirstName = model.FirstName;
                     user.LastName = model.LastName;
                     user.DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo);
-                    user.Sex = model.Sex;                                    
+                    user.Sex = model.Sex;
                     user.Height = model.Height;
                     user.Weight = model.Weight;
                     user.TargetWeight = model.TargetWeight;
@@ -636,8 +654,7 @@ namespace BeInPink.Controllers
                     user.FitnessPlan = model.FitnessPlan;
                     user.Waist = model.Waist;
                     user.Hip = model.Hip;
-                 //   user.WaistToHipRatio = model.WaistToHipRatio;
-
+                    user.SecurityStamp = securityStamp.ToString();
                     db.Entry(user).State = EntityState.Modified;
                     db.SaveChanges();
                     return RedirectToAction("Index", "Home");
@@ -651,16 +668,60 @@ namespace BeInPink.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                //foreach (var eve in e.EntityValidationErrors)
-                //{
-                //    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                //        eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                //    foreach (var ve in eve.ValidationErrors)
-                //    {
-                //        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
-                //            ve.PropertyName, ve.ErrorMessage);
-                //    }
-                //}
+
+                return View(model);
+            }
+
+        }
+
+        //
+        // GET: /Account/EditClientProfile
+        [AllowAnonymous]
+        public ActionResult GetEditCoachProfile(EditCoachProfileViewModel model)
+        {
+            return View("EditCoachProfile", model);
+        }
+
+        //
+        // POST: /Account/EditClientProfile
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditCoachProfile(EditCoachProfileViewModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    CultureInfo cultureinfo = new CultureInfo("nl-NL");
+                    Guid securityStamp = Guid.NewGuid();
+                    Coach user = new Coach();
+                    user.Id = User.Identity.GetUserId();
+                    user.Email = model.Email;
+                    user.UserName = model.UserName;
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.DOB = DateTime.Parse(model.DOB.ToString(), cultureinfo);
+                    user.Qualification = model.Qualification;
+                    user.Description = model.Description;
+                    user.CoachingType = model.CoachingType;
+                    user.Specialization = model.Specialization;
+                    user.WorkLocation = model.WorkLocation;
+                    user.SecurityStamp = securityStamp.ToString();
+                    db.Entry(user).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index", "Home");
+
+                }
+                else
+                {
+                    return View(model);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
                 return View(model);
             }
 

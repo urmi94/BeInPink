@@ -15,7 +15,7 @@ namespace BeInPink.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-
+        private ApplicationDbContext db = new ApplicationDbContext();
         public ManageController()
         {
         }
@@ -332,8 +332,18 @@ namespace BeInPink.Controllers
 
             base.Dispose(disposing);
         }
+        //Get: /Manage/DeleteAccount
+        public ActionResult DeleteAccount()
+        {
+            var userId = User.Identity.GetUserId();
+            var user = db.Users.Find(userId);
+            db.Users.Remove(user);
+            db.SaveChanges();
 
-#region Helpers
+            return RedirectToAction("Index", "Manage");
+        }
+
+        #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 

@@ -19,7 +19,7 @@ namespace BeInPink.Models
         }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        [DateLessThanToday]
+      //  [DateLessThanToday]
         public DateTime DOB { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -47,29 +47,41 @@ namespace BeInPink.Models
         public System.Data.Entity.DbSet<BeInPink.Models.RegisterCoachViewModel> Coaches { get; set; }
 
         public System.Data.Entity.DbSet<BeInPink.Models.EditClientProfileViewModel> EditClientProfileViewModels { get; set; }
+
+        public System.Data.Entity.DbSet<BeInPink.Models.EditCoachProfileViewModel> EditCoachProfileViewModels { get; set; }
+
+        public System.Data.Entity.DbSet<BeInPink.Models.SendEmailViewModel> SendEmailViewModels { get; set; }
+
+
+        public System.Data.Entity.DbSet<BeInPink.Models.Coach> CoachUsers { get; set; }
+        public System.Data.Entity.DbSet<BeInPink.Models.Client> ClientUsers { get; set; }
+
+        public System.Data.Entity.DbSet<BeInPink.Models.Booking> Bookings { get; set; }
+
+        public System.Data.Entity.DbSet<BeInPink.Models.BookingViewModel> BookingViewModels { get; set; }
         //public System.Data.Entity.DbSet<ApplicationUser> ApplicationUsers { get; set; }
     }
 
-    public class DateLessThanTodayAttribute : ValidationAttribute
-    {
-        private DateTime _MaxDate;
+    //public class DateLessThanTodayAttribute : ValidationAttribute
+    //{
+    //    private DateTime _MaxDate;
 
 
-        public DateLessThanTodayAttribute()
-        {
-            _MaxDate = DateTime.Today.AddDays(-1);
-        }
+    //    public DateLessThanTodayAttribute()
+    //    {
+    //        _MaxDate = DateTime.Today.AddDays(-1);
+    //    }
 
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            DateTime dt = DateTime.Parse(value.ToString(), CultureInfo.InvariantCulture);
-            if (dt < DateTime.UtcNow)
-            {
-                return ValidationResult.Success;
-            }
+    //    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    //    {
+    //        DateTime dt = DateTime.Parse(value.ToString(), CultureInfo.InvariantCulture);
+    //        if (dt < DateTime.UtcNow)
+    //        {
+    //            return ValidationResult.Success;
+    //        }
 
-            return new ValidationResult("Do you come from future?");
+    //        return new ValidationResult("Do you come from future?");
 
-        }
-    }
+    //    }
+    //}
 }
