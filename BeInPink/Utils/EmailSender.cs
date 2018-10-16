@@ -10,7 +10,7 @@ namespace BeInPink.Utils
     public class EmailSender
     {
         // Please use your API KEY here.
-        private const String API_KEY = "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";
+        private const String API_KEY = "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";
 
         public void Send(String toEmail, String subject, String contents)
         {

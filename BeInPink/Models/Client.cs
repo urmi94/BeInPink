@@ -8,6 +8,7 @@ namespace BeInPink.Models
 {
     public class Client : ApplicationUser
     {
+        public virtual ICollection<Booking> BookingClients { get; set; }
         public double? Height { get; set; }
         public double? Weight { get; set; }
         public double? TargetWeight { get; set; }

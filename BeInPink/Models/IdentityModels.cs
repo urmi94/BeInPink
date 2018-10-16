@@ -19,7 +19,6 @@ namespace BeInPink.Models
         }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-      //  [DateLessThanToday]
         public DateTime DOB { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
@@ -28,6 +27,8 @@ namespace BeInPink.Models
             // Add custom user claims here
             return userIdentity;
         }
+        public virtual ICollection<Post> PostAuthor { get; set; }
+        public virtual ICollection<Post> PostUpdatedByAuthor { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
@@ -55,33 +56,15 @@ namespace BeInPink.Models
 
         public System.Data.Entity.DbSet<BeInPink.Models.Coach> CoachUsers { get; set; }
         public System.Data.Entity.DbSet<BeInPink.Models.Client> ClientUsers { get; set; }
-
+        public System.Data.Entity.DbSet<BeInPink.Models.Admin> Admins { get; set; }
         public System.Data.Entity.DbSet<BeInPink.Models.Booking> Bookings { get; set; }
 
-        public System.Data.Entity.DbSet<BeInPink.Models.BookingViewModel> BookingViewModels { get; set; }
+        public System.Data.Entity.DbSet<BeInPink.Models.Post> Posts { get; set; }
+
+
+
         //public System.Data.Entity.DbSet<ApplicationUser> ApplicationUsers { get; set; }
     }
 
-    //public class DateLessThanTodayAttribute : ValidationAttribute
-    //{
-    //    private DateTime _MaxDate;
-
-
-    //    public DateLessThanTodayAttribute()
-    //    {
-    //        _MaxDate = DateTime.Today.AddDays(-1);
-    //    }
-
-    //    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-    //    {
-    //        DateTime dt = DateTime.Parse(value.ToString(), CultureInfo.InvariantCulture);
-    //        if (dt < DateTime.UtcNow)
-    //        {
-    //            return ValidationResult.Success;
-    //        }
-
-    //        return new ValidationResult("Do you come from future?");
-
-    //    }
-    //}
+   
 }

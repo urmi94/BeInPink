@@ -1,0 +1,81 @@
+﻿@model BeInPink.Models.Booking
+
+@{
+    ViewBag.Title = "Reject";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Reject</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>Booking</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.BookingID)
+    @Html.HiddenFor(model => model.BookingClientId)
+    @Html.HiddenFor(model => model.BookingCoachId)
+    @Html.HiddenFor(model => model.BookingStatus)
+    @Html.HiddenFor(model => model.BookingDateTime)
+    <dl class="dl-horizontal">
+        @{
+            var clientName = String.Format("{0} {1}", Model.Client.FirstName, Model.Client.LastName);
+            var coachName = String.Format("{0} {1}", Model.Coach.FirstName, Model.Coach.LastName);
+        }
+        <dt>
+            @Html.DisplayNameFor(model => model.Client.FirstName)
+        </dt>
+
+        <dd>
+
+            @Html.DisplayFor(model => clientName)
+        </dd>
+        @if (User.IsInRole("Admin"))
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.Coach.FirstName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => coachName)
+            </dd>
+        }
+        <dt>
+            @Html.DisplayNameFor(model => model.BookingDateTime)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BookingDateTime)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BookingStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BookingStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RejectReason)
+        </dt>
+
+        <dd>
+            @Html.EditorFor(model => model.RejectReason, new { htmlAttributes = new { @class = "form-control" } })
+        </dd>
+
+    </dl>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Reject" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+<p>
+
+    @Html.ActionLink("Back to List", "Index")
+</p>

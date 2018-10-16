@@ -10,53 +10,72 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Booking</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.BookingID)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.BookingDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+<div class="form-horizontal">
+    <h4>Booking</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.BookingID)
+    @Html.HiddenFor(model => model.BookingClientId)
+    @Html.HiddenFor(model => model.BookingCoachId)
+    @Html.HiddenFor(model => model.BookingStatus)
+    @Html.HiddenFor(model => model.BookingDateTime)
+    <div class="form-group">
+        @Html.LabelFor(model => model.BookingDateTime, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-3">
+            <div class="input-group date'" id='datetimepicker1'>
                 @Html.EditorFor(model => model.BookingDateTime, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.BookingDateTime, "", new { @class = "text-danger" })
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+
             </div>
         </div>
-
+        @Html.ValidationMessageFor(model => model.BookingDateTime, "", new { @class = "text-danger" })
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker1').datetimepicker({
+                //format: 'YYYY-MM-DD HH:MM',
+                minDate: new Date()
+            });
+        });
+    </script>
+    @if (Model.BookingStatus == BeInPink.Models.Booking._bookingStatus.Rejected)
+    {
         <div class="form-group">
-            @Html.LabelFor(model => model.BookingClientId, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.RejectReason, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.BookingClientId, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.BookingClientId, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.RejectReason, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.BookingCoachId, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.BookingCoachId, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.BookingCoachId, "", new { @class = "text-danger" })
-            </div>
-        </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.BookingStatus, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.BookingStatus, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.BookingStatus, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    }
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
+
+
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
         </div>
     </div>
+</div>
 }
 
 <div>
     @Html.ActionLink("Back to List", "Index")
 </div>
+@section Scripts {
+    <script src="~/Scripts/moment.min.js"></script>
+    <link href="~/Contents/bootstrap-datepicker.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+    <script src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+
+}
+

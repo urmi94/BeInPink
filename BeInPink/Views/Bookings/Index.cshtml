@@ -6,47 +6,100 @@
 }
 
 <h2>Index</h2>
-
+@if (ViewBag.Result != null)
+{
+    <div class="alert alert-info">@ViewBag.Result</div>
+}
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+
 <table class="table">
     <tr>
+        @if (User.IsInRole("Coach") || User.IsInRole("Admin"))
+        {
+            <th>
+                Client Name
+            </th>
+        }
+        @if (User.IsInRole("Client") || User.IsInRole("Admin"))
+        {
+            <th>
+                Coach Name
+            </th>
+        }
+
         <th>
-            @Html.DisplayNameFor(model => model.BookingDateTime)
+            Booking Date and Time
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.BookingClientId)
+            Booking Status
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.BookingCoachId)
+            Action
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.BookingStatus)
-        </th>
-        <th></th>
+        @if (User.IsInRole("Admin") || User.IsInRole("Coach"))
+        {
+            <th>
+                Rejection Reason
+            </th>
+        }
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.BookingDateTime)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.BookingClientId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.BookingCoachId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.BookingStatus)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.BookingID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.BookingID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.BookingID })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        var clientName = String.Format("{0} {1}", item.Client.FirstName, item.Client.LastName);
+        var coachName = String.Format("{0} {1}", item.Coach.FirstName, item.Coach.LastName);
+        <tr>
+            @if (User.IsInRole("Coach") || User.IsInRole("Admin"))
+            {
+
+                <td>
+                    @Html.DisplayFor(modelItem => clientName)
+                </td>
+            }
+            @if (User.IsInRole("Client") || User.IsInRole("Admin"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => coachName)
+                </td>
+            }
+
+            <td>
+                @Html.DisplayFor(modelItem => item.BookingDateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BookingStatus)
+            </td>
+            <td>
+                @if ((User.IsInRole("Coach") || User.IsInRole("Admin")) && item.BookingStatus == BeInPink.Models.Booking._bookingStatus.Requested)
+                {
+                    <text>|</text>
+                    @Html.ActionLink("Approve", "Approve", new { id = item.BookingID })
+                    <text>|</text>
+                    @Html.ActionLink("Reject", "Reject", new { id = item.BookingID })
+                }
+
+                @if ((User.IsInRole("Client") || User.IsInRole("Admin")) && item.BookingStatus == BeInPink.Models.Booking._bookingStatus.Requested)
+                {
+                    <text>|</text>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.BookingID })
+
+                }
+                @if (User.IsInRole("Admin"))
+                {
+                    <text>|</text>
+                    @Html.ActionLink("Delete", "Delete", new { id = item.BookingID })
+                    <text>|</text>
+                }
+            </td>
+            <td>
+                @if ((User.IsInRole("Admin") || User.IsInRole("Coach")) && item.BookingStatus == BeInPink.Models.Booking._bookingStatus.Rejected)
+                {
+                    @Html.DisplayFor(i => item.RejectReason, new { htmlAttributes = new { @class = "form-control" } })
+                }
+            </td>
+        </tr>
+    }
 
 </table>
